@@ -1,96 +1,197 @@
 @import "tailwindcss";
 
 :root {
-  --background: #09090b; /* Zinc 950 */
-  --foreground: #fafafa; /* Zinc 50 */
-  --card: #121215;
-  --card-border: rgba(255, 255, 255, 0.06);
-  --primary: #f59e0b; /* Amber 500 */
-  --primary-hover: #d97706; /* Amber 600 */
-  --accent: #8b5cf6; /* Violet 500 */
-  --accent-light: rgba(139, 92, 246, 0.15);
-  --muted: #a1a1aa; /* Zinc 400 */
-  --muted-dark: #27272a; /* Zinc 800 */
+  --background: #fcfaef;
+  --foreground: #1b1c16;
+  
+  --surface: #fcfaef;
+  --surface-dim: #dcdad0;
+  --surface-bright: #fcfaef;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f6f4e9;
+  --surface-container: #f0eee3;
+  --surface-container-high: #eae8de;
+  --surface-container-highest: #e4e3d8;
+  
+  --on-surface: #1b1c16;
+  --on-surface-variant: #594138;
+  --outline: #8d7166;
+  --outline-variant: #e1bfb2;
+  
+  --primary: #a03b00;
+  --on-primary: #ffffff;
+  --primary-container: #c94c00;
+  --on-primary-container: #fffbff;
+  
+  --secondary: #4f5e7e;
+  --on-secondary: #ffffff;
+  --secondary-container: #cadaff;
+  --on-secondary-container: #505f7f;
+  
+  --tertiary: #725813;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #8d712a;
+  --on-tertiary-container: #fffbff;
+  
+  --error: #ba1a1a;
+  --on-error: #ffffff;
+  --error-container: #ffdad6;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-border: var(--card-border);
-  --color-primary: var(--primary);
-  --color-primary-hover: var(--primary-hover);
-  --color-accent: var(--accent);
-  --color-accent-light: var(--accent-light);
-  --color-muted-text: var(--muted);
-  --color-muted-border: var(--muted-dark);
   
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+  
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-primary-container: var(--primary-container);
+  
+  --color-secondary: var(--secondary);
+  --color-on-secondary: var(--on-secondary);
+  --color-secondary-container: var(--secondary-container);
+  
+  --color-tertiary: var(--tertiary);
+  --color-on-tertiary: var(--on-tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  
+  --color-error: var(--error);
+  
+  --font-serif: var(--font-playfair), Georgia, serif;
+  --font-sans: var(--font-jakarta), Arial, sans-serif;
+  
+  --radius-sm: 0.125rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, sans-serif;
+  font-family: var(--font-jakarta), Arial, sans-serif;
   overflow-x: hidden;
 }
 
-/* Premium Radial Gradient Mesh */
-.bg-mesh {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    radial-gradient(at 10% 20%, rgba(139, 92, 246, 0.1) 0px, transparent 50%),
-    radial-gradient(at 90% 10%, rgba(245, 158, 11 0.08) 0px, transparent 50%),
-    radial-gradient(at 50% 80%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
-  z-index: -10;
-  pointer-events: none;
-}
-
-/* Glow effects */
-.glow-card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
-}
-
-.glow-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15);
-  border-color: rgba(139, 92, 246, 0.3);
-}
-
-/* Custom Scrollbar */
+/* Custom Scrollbar for Vintage Palette */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: var(--surface-container-low);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: var(--surface-dim);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #f59e0b;
+  background: var(--primary);
 }
 
-/* Animate background positions */
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 1;
+/* Tactile Graphic Elevation ("Sticker-Stacking") */
+.lift-card {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
+  box-shadow: 2px 2px 0px 0px rgba(27, 28, 22, 0.08);
+}
+
+.lift-card:hover {
+  transform: translate(-4px, -4px);
+  box-shadow: 6px 6px 0px 0px var(--on-surface);
+  border-color: var(--on-surface);
+}
+
+/* Tactile lift states for buttons */
+.lift-btn-primary {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 2px 2px 0px 0px var(--on-surface);
+}
+
+.lift-btn-primary:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px var(--on-surface);
+}
+
+.lift-btn-primary:active {
+  transform: translate(0px, 0px);
+  box-shadow: 0px 0px 0px 0px var(--on-surface);
+}
+
+/* Paper Layering logic */
+.paper-layer {
+  background-color: var(--surface-container-lowest);
+  border: 1px solid var(--surface-container-highest);
+  position: relative;
+}
+
+/* Typography Helpers based on Rhythmic Heritage specification */
+.font-headline-xl {
+  font-family: var(--font-playfair), serif;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 768px) {
+  .font-headline-xl {
+    font-size: 36px;
+    line-height: 1.2;
   }
 }
 
-.animate-pulse-glow {
-  animation: pulseGlow 4s infinite alternate;
+.font-headline-lg {
+  font-family: var(--font-playfair), serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.font-headline-md {
+  font-family: var(--font-playfair), serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.font-body-lg {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.font-body-md {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.font-label-md {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+}
+
+.font-label-sm {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
 }

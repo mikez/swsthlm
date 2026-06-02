@@ -120,34 +120,34 @@ export function EventFilters({ events }: EventFiltersProps) {
   return (
     <div className="w-full">
       {/* Search and Filters panel */}
-      <div className="bg-[var(--card)] border border-[var(--card-border)] rounded-2xl p-6 mb-8 shadow-xl">
+      <div className="border border-[var(--surface-container-highest)] bg-[var(--surface-container-low)] rounded-lg p-6 mb-10 shadow-sm">
         <div className="flex flex-col gap-6">
-          {/* Search Bar */}
+          {/* Search Bar - Ledger Bottom Border Style */}
           <div className="relative w-full">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
+            <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
             <input
               type="text"
-              placeholder="Search by band, DJ, venue, title, style..."
+              placeholder="Search by band, DJ, venue, title..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
+              className="w-full pl-8 pr-4 py-3 bg-transparent border-0 border-b-2 border-[var(--on-surface)] text-[var(--on-surface)] placeholder-zinc-500 focus:outline-none focus:ring-0 focus:border-[var(--primary)] font-sans font-body-md transition-all rounded-none"
             />
           </div>
 
           {/* Style Filters */}
           <div>
-            <span className="flex items-center gap-2 text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Filter by Style
+            <span className="flex items-center gap-2 font-sans text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
+              <Sparkles className="w-3.5 h-3.5 text-[var(--primary)]" /> Filter by Style
             </span>
             <div className="flex flex-wrap gap-2">
               {stylesList.map((style) => (
                 <button
                   key={style}
                   onClick={() => setSelectedStyle(style)}
-                  className={`px-4 py-1.5 rounded-lg text-sm font-medium border transition-all ${
+                  className={`px-4 py-1.5 rounded text-xs font-bold uppercase tracking-wider border transition-all ${
                     selectedStyle === style
-                      ? 'bg-amber-500 text-zinc-950 border-amber-500 font-bold shadow-lg shadow-amber-500/20'
-                      : 'bg-zinc-900/55 hover:bg-zinc-800/80 text-zinc-300 border-zinc-800'
+                      ? 'bg-[var(--primary)] text-white border-[var(--on-surface)] font-bold shadow-[2px_2px_0px_0px_var(--on-surface)] -translate-y-0.5 -translate-x-0.5'
+                      : 'bg-[var(--surface-container)] hover:bg-[var(--surface-container-high)] text-[var(--on-surface)] border-[var(--surface-container-highest)]'
                   }`}
                 >
                   {normalizeStyleLabel(style)}
@@ -158,18 +158,18 @@ export function EventFilters({ events }: EventFiltersProps) {
 
           {/* Venue Filters */}
           <div>
-            <span className="flex items-center gap-2 text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
-              <MapPin className="w-3.5 h-3.5 text-violet-500" /> Filter by Venue
+            <span className="flex items-center gap-2 font-sans text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
+              <MapPin className="w-3.5 h-3.5 text-[var(--secondary)]" /> Filter by Venue
             </span>
             <div className="flex flex-wrap gap-2">
               {venuesList.map((venue) => (
                 <button
                   key={venue}
                   onClick={() => setSelectedVenue(venue)}
-                  className={`px-4 py-1.5 rounded-lg text-sm font-medium border transition-all ${
+                  className={`px-4 py-1.5 rounded text-xs font-bold uppercase tracking-wider border transition-all ${
                     selectedVenue === venue
-                      ? 'bg-violet-500 text-white border-violet-500 font-bold shadow-lg shadow-violet-500/20'
-                      : 'bg-zinc-900/55 hover:bg-zinc-800/80 text-zinc-300 border-zinc-800'
+                      ? 'bg-[var(--secondary)] text-white border-[var(--on-surface)] font-bold shadow-[2px_2px_0px_0px_var(--on-surface)] -translate-y-0.5 -translate-x-0.5'
+                      : 'bg-[var(--surface-container)] hover:bg-[var(--surface-container-high)] text-[var(--on-surface)] border-[var(--surface-container-highest)]'
                   }`}
                 >
                   {venue === 'all' ? 'All Venues' : venue}
@@ -180,7 +180,7 @@ export function EventFilters({ events }: EventFiltersProps) {
         </div>
 
         {/* Info count */}
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-[var(--card-border)] text-xs text-zinc-500">
+        <div className="flex items-center justify-between mt-6 pt-4 border-t border-[var(--surface-container-highest)] font-sans text-xs text-zinc-500 uppercase tracking-wider font-semibold">
           <span>Found {totalCount} event{totalCount !== 1 ? 's' : ''}</span>
           {(selectedStyle !== 'all' || selectedVenue !== 'all' || searchQuery) && (
             <button
@@ -189,7 +189,7 @@ export function EventFilters({ events }: EventFiltersProps) {
                 setSelectedStyle('all');
                 setSelectedVenue('all');
               }}
-              className="text-amber-500 hover:underline"
+              className="text-[var(--primary)] hover:underline font-bold"
             >
               Reset Filters
             </button>
@@ -200,10 +200,10 @@ export function EventFilters({ events }: EventFiltersProps) {
       {/* Events Results Section */}
       <div className="space-y-12">
         {totalCount === 0 ? (
-          <div className="text-center py-16 border border-dashed border-zinc-800 rounded-2xl bg-[var(--card)] p-8">
-            <SlidersHorizontal className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
-            <h3 className="text-lg font-bold text-white mb-1">No events match your filters</h3>
-            <p className="text-sm text-zinc-400 max-w-sm mx-auto">
+          <div className="text-center py-16 border border-dashed border-[var(--surface-container-highest)] rounded bg-[var(--surface-container-low)] p-8">
+            <SlidersHorizontal className="w-12 h-12 text-zinc-400 mx-auto mb-4" />
+            <h3 className="font-serif text-xl font-bold text-[var(--on-surface)] mb-1">No events match your filters</h3>
+            <p className="font-sans font-body-md text-zinc-500 max-w-sm mx-auto">
               Try adjusting your search terms or filters to find dance events.
             </p>
           </div>
@@ -212,10 +212,12 @@ export function EventFilters({ events }: EventFiltersProps) {
             {/* THIS WEEK EVENTS SECTION */}
             {eventSections.hasThisWeek && (
               <div>
-                <div className="flex items-center gap-3 mb-6 border-b border-[var(--card-border)] pb-3">
-                  <CalendarDays className="w-5 h-5 text-amber-500" />
-                  <h2 className="text-2xl font-black text-white tracking-tight">Happening This Week</h2>
-                  <span className="ml-2 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold">
+                <div className="flex items-center gap-3 mb-6 border-b border-[var(--surface-container-highest)] pb-3">
+                  <CalendarDays className="w-5 h-5 text-[var(--primary)]" />
+                  <h2 className="font-serif text-3xl font-bold tracking-tight text-[var(--on-surface)]">
+                    Happening <span className="italic">This Week</span>
+                  </h2>
+                  <span className="ml-2 px-2.5 py-0.5 rounded bg-[var(--primary)]/10 text-[var(--primary)] text-xs font-bold uppercase tracking-wider border border-[var(--primary)]/20">
                     Highlight
                   </span>
                 </div>
@@ -223,7 +225,7 @@ export function EventFilters({ events }: EventFiltersProps) {
                 <div className="space-y-8">
                   {Object.entries(eventSections.thisWeek).map(([date, dateEvents]) => (
                     <div key={date} className="space-y-4">
-                      <h3 className="text-sm font-bold text-amber-400 uppercase tracking-widest bg-amber-500/5 py-1.5 px-3 rounded-lg inline-block border border-amber-500/10">
+                      <h3 className="font-sans text-xs font-bold text-[var(--primary)] uppercase tracking-widest bg-[var(--primary)]/10 py-1.5 px-3 rounded inline-block border border-[var(--primary)]/15">
                         {formatEventDate(date)}
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -239,16 +241,18 @@ export function EventFilters({ events }: EventFiltersProps) {
 
             {/* UPCOMING EVENTS SECTION */}
             {eventSections.hasUpcoming && (
-              <div>
-                <div className="flex items-center gap-3 mb-6 border-b border-[var(--card-border)] pb-3">
-                  <CalendarDays className="w-5 h-5 text-zinc-400" />
-                  <h2 className="text-2xl font-black text-white tracking-tight">Upcoming Events</h2>
+              <div className="pt-4">
+                <div className="flex items-center gap-3 mb-6 border-b border-[var(--surface-container-highest)] pb-3">
+                  <CalendarDays className="w-5 h-5 text-zinc-600" />
+                  <h2 className="font-serif text-3xl font-bold tracking-tight text-[var(--on-surface)]">
+                    Upcoming <span className="italic">Events</span>
+                  </h2>
                 </div>
 
                 <div className="space-y-8">
                   {Object.entries(eventSections.upcoming).map(([date, dateEvents]) => (
                     <div key={date} className="space-y-4">
-                      <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest bg-zinc-800/40 py-1.5 px-3 rounded-lg inline-block border border-zinc-800">
+                      <h3 className="font-sans text-xs font-bold text-zinc-600 uppercase tracking-widest bg-[var(--surface-container-low)] py-1.5 px-3 rounded inline-block border border-[var(--surface-container-highest)]">
                         {formatEventDate(date)}
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
