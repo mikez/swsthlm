@@ -1,65 +1,93 @@
-import Image from "next/image";
+import React from 'react';
+import { getEvents } from '@/lib/events';
+import { EventFilters } from '@/components/EventFilters';
+import { Music, Sparkles } from 'lucide-react';
+import type { Metadata } from 'next';
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: 'This Week in Swing Stockholm | Swing Dance Events Calendar',
+  description:
+    'A lightweight, optimized guide to Lindy Hop, Balboa, Shag, and Blues social dancing and workshops in Stockholm. Real-time updates and edge-cached schedule.',
+};
+
+// Force dynamic is NOT needed because ISR is handled by fetch cache options (revalidate).
+// The page will be rendered statically and revalidated on demand/ISR.
+export default async function Page() {
+  const events = await getEvents();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="min-h-screen flex flex-col relative text-zinc-100">
+      {/* Visual background gradient mesh */}
+      <div className="bg-mesh" />
+
+      {/* Decorative Glow */}
+      <div className="absolute top-[-10%] left-[50%] -translate-x-[50%] w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+
+      {/* Header */}
+      <header className="w-full border-b border-[var(--card-border)] bg-zinc-950/40 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-violet-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
+              <Music className="w-5 h-5 text-zinc-950 font-bold" />
+            </div>
+            <div>
+              <h1 className="text-lg font-black tracking-tight text-white flex items-center gap-1.5">
+                Swing <span className="text-amber-400">Stockholm</span>
+              </h1>
+              <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-semibold">This Week</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 text-xs text-zinc-400 bg-zinc-900/80 px-3 py-1.5 rounded-lg border border-zinc-800">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+            <span>Updated hourly via Google Sheets</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+        {/* Hero Section */}
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold border border-amber-500/20 mb-4">
+            <Sparkles className="w-3.5 h-3.5" />
+            Stockholm&apos;s Social Dance & Workshop Aggregator
+          </div>
+          <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-4">
+            This Week in <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-violet-400">Swing Stockholm</span>
+          </h2>
+          <p className="text-zinc-400 leading-relaxed">
+            Your single, optimized calendar for Lindy Hop, Balboa, Blues, and Shag dancing events in Stockholm, Sweden. Instant load times and responsive client-side filters.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
+        {/* Client-Side Interactive Filters and Event Listing */}
+        <EventFilters events={events} />
       </main>
+
+      {/* Footer */}
+      <footer className="w-full border-t border-[var(--card-border)] bg-zinc-950/60 py-8 mt-12 text-zinc-500 text-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <p>© {new Date().getFullYear()} Swing Stockholm. All rights reserved.</p>
+            <p className="mt-1 text-zinc-600">
+              Not affiliated with any specific studio. Created by dancers, for dancers.
+            </p>
+          </div>
+          <div className="flex gap-4">
+            <a
+              href={`https://docs.google.com/spreadsheets/d/${process.env.NEXT_PUBLIC_SPREADSHEET_ID || ''}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-amber-400 transition-colors"
+            >
+              Spreadsheet Database
+            </a>
+            <span>•</span>
+            <span className="text-zinc-600">Stockholm, Sweden</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

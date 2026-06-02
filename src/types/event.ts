@@ -1,0 +1,16 @@
+export interface SwingEvent {
+  id: string;
+  title: string;
+  status: 'published' | 'draft';
+  date: string;       // YYYY-MM-DD
+  start: string;      // HH:MM
+  end: string;        // HH:MM
+  venue: string;      // e.g., "Chicago Swing Dance Studio"
+  address: string;    // e.g., "Hornsgatan 75"
+  style: string;      // e.g., "lindy", "balboa", "blues", "all"
+  organizer: string;
+  band?: string;
+  dj?: string;
+  ticket?: string;    // URL string
+  body: string;       // Markdown or plain text description
+}
