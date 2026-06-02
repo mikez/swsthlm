@@ -26,7 +26,7 @@ export default async function Page() {
               <h1 className="font-serif text-xl font-bold tracking-tight text-[var(--on-surface)] flex items-center gap-1.5">
                 Swing <span className="text-[var(--primary)]">Stockholm</span>
               </h1>
-              <p className="font-sans text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Rhythmic Heritage</p>
+              <p className="font-sans text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Swing Dance Calendar</p>
             </div>
           </div>
 
@@ -68,7 +68,7 @@ export default async function Page() {
             </p>
           </div>
           <div className="flex gap-6 uppercase font-bold tracking-wider text-[11px] text-[var(--on-surface-variant)]">
-            <span className="text-zinc-400">Noble Version</span>
+            <span>Stockholm, Sweden</span>
           </div>
         </div>
       </footer>
