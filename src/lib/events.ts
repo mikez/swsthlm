@@ -40,7 +40,7 @@ function normalizeRow(row: Record<string, string>): Partial<SwingEvent> {
 }
 
 /**
- * Fetches events from either Google Sheets (if configured) or falls back to local mock data.
+ * Fetches events from the event database feed (if configured) or falls back to local mock data.
  * Implementation of Incremental Static Regeneration edge caching (1 hour).
  */
 export async function getEvents(): Promise<SwingEvent[]> {
@@ -57,11 +57,11 @@ export async function getEvents(): Promise<SwingEvent[]> {
       if (response.ok) {
         csvText = await response.text();
       } else {
-        console.warn(`Failed to fetch sheet. Response code: ${response.status}. Using mock data instead.`);
+        console.warn(`Failed to fetch event database. Response code: ${response.status}. Using mock data instead.`);
         csvText = MOCK_CSV;
       }
     } catch (e) {
-      console.error('Error fetching sheet, falling back to mock data:', e);
+      console.error('Error fetching event database, falling back to mock data:', e);
       csvText = MOCK_CSV;
     }
   } else {

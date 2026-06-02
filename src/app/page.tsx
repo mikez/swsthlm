@@ -68,15 +68,6 @@ export default async function Page() {
             </p>
           </div>
           <div className="flex gap-6 uppercase font-bold tracking-wider text-[11px] text-[var(--on-surface-variant)]">
-            <a
-              href={`https://docs.google.com/spreadsheets/d/${process.env.NEXT_PUBLIC_SPREADSHEET_ID || ''}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[var(--primary)] transition-colors underline underline-offset-4"
-            >
-              Spreadsheet Database
-            </a>
-            <span>•</span>
             <span className="text-zinc-400">Noble Version</span>
           </div>
         </div>
