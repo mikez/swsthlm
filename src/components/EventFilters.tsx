@@ -8,9 +8,10 @@ import { isCurrentWeek, formatEventDate } from '@/lib/events';
 
 interface EventFiltersProps {
   events: SwingEvent[];
+  currentDate: string;
 }
 
-export function EventFilters({ events }: EventFiltersProps) {
+export function EventFilters({ events, currentDate }: EventFiltersProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStyle, setSelectedStyle] = useState('all');
   const [selectedVenue, setSelectedVenue] = useState('all');
@@ -80,8 +81,7 @@ export function EventFilters({ events }: EventFiltersProps) {
   // Group events by date into "This Week" vs "Upcoming"
   const eventSections = useMemo(() => {
     // Current date reference for "This Week" detection (local time)
-    // We use the system time context 2026-06-02 as the anchor
-    const REFERENCE_DATE = '2026-06-02';
+    const REFERENCE_DATE = currentDate;
 
     const thisWeekEvents: SwingEvent[] = [];
     const upcomingEvents: SwingEvent[] = [];
@@ -112,7 +112,7 @@ export function EventFilters({ events }: EventFiltersProps) {
       hasThisWeek: thisWeekEvents.length > 0,
       hasUpcoming: upcomingEvents.length > 0,
     };
-  }, [filteredEvents]);
+  }, [filteredEvents, currentDate]);
 
   // Total count for filters label
   const totalCount = filteredEvents.length;

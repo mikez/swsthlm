@@ -1,5 +1,5 @@
 import React from 'react';
-import { getEvents } from '@/lib/events';
+import { getEvents, getStockholmCurrentDate } from '@/lib/events';
 import { EventFilters } from '@/components/EventFilters';
 import { Music, Sparkles } from 'lucide-react';
 import type { Metadata } from 'next';
@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const events = await getEvents();
+  const currentDate = getStockholmCurrentDate();
 
   return (
     <div className="min-h-screen flex flex-col relative bg-[var(--background)] text-[var(--on-surface)]">
@@ -55,7 +56,7 @@ export default async function Page() {
         </div>
 
         {/* Client-Side Interactive Filters and Event Listing */}
-        <EventFilters events={events} />
+        <EventFilters events={events} currentDate={currentDate} />
       </main>
 
       {/* Footer */}

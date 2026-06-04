@@ -79,9 +79,13 @@ export async function getEvents(): Promise<SwingEvent[]> {
 
   // In production, automatically filter out events where status === 'draft'
   const isProd = process.env.NODE_ENV === 'production';
-  const filteredEvents = isProd
+  let filteredEvents = isProd
     ? parsedEvents.filter((event) => event.status === 'published')
     : parsedEvents;
+
+  // Filter out past events (before current Stockholm date)
+  const currentDate = getStockholmCurrentDate();
+  filteredEvents = filteredEvents.filter((event) => event.date >= currentDate);
 
   // Group and sort events chronologically by date and start time
   return filteredEvents.sort((a, b) => {
@@ -90,6 +94,18 @@ export async function getEvents(): Promise<SwingEvent[]> {
     }
     return a.start.localeCompare(b.start);
   });
+}
+
+/**
+ * Helper to get the current date in the Europe/Stockholm timezone as a YYYY-MM-DD string.
+ */
+export function getStockholmCurrentDate(): string {
+  const options = { timeZone: 'Europe/Stockholm', year: 'numeric', month: '2-digit', day: '2-digit' } as const;
+  const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(new Date());
+  const year = parts.find(p => p.type === 'year')?.value || '';
+  const month = parts.find(p => p.type === 'month')?.value || '';
+  const day = parts.find(p => p.type === 'day')?.value || '';
+  return `${year}-${month}-${day}`;
 }
 
 /**
