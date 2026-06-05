@@ -14,7 +14,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'This Week in Swing Stockholm',
+  title: 'Stockholm Swing',
   description: 'A lightweight, optimized guide to swing dance events in Stockholm.',
 };
 

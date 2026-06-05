@@ -1,11 +1,12 @@
 import React from 'react';
+import Link from 'next/link';
 import { getEvents, getStockholmCurrentDate } from '@/lib/events';
 import { EventFilters } from '@/components/EventFilters';
-import { Music, Sparkles } from 'lucide-react';
+import { Music } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'This Week in Swing Stockholm | Swing Dance Events Calendar',
+  title: 'This Week in Swing Dance Stockholm | Stockholm Swing',
   description:
     'A lightweight, optimized guide to Lindy Hop, Balboa, Shag, and Blues social dancing and workshops in Stockholm. Real-time updates and edge-cached schedule.',
 };
@@ -25,16 +26,19 @@ export default async function Page() {
             </div>
             <div>
               <h1 className="font-serif text-xl font-bold tracking-tight text-[var(--on-surface)] flex items-center gap-1.5">
-                Swing <span className="text-[var(--primary)]">Stockholm</span>
+                Stockholm <span className="text-[var(--primary)]">Swing</span>
               </h1>
-              <p className="font-sans text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Swing Dance Calendar</p>
+              <p className="font-sans text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Dance Calendar</p>
             </div>
           </div>
 
           <nav className="flex items-center gap-6">
-            <span className="font-sans text-[11px] font-bold text-zinc-500 uppercase tracking-widest">
-              Stockholm, Sweden
-            </span>
+            <Link 
+              href="/about" 
+              className="font-sans text-[11px] font-bold text-zinc-500 hover:text-[var(--primary)] transition-colors uppercase tracking-widest"
+            >
+              About
+            </Link>
           </nav>
         </div>
       </header>
@@ -42,17 +46,10 @@ export default async function Page() {
       {/* Main Content */}
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
         {/* Hero Section */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded border border-[var(--primary)]/20 bg-[var(--primary)]/5 text-[var(--primary)] font-sans text-xs font-bold uppercase tracking-widest mb-6">
-            <Sparkles className="w-3.5 h-3.5" />
-            Stockholm&apos;s Dance & Workshop Aggregator
-          </div>
-          <h2 className="font-serif text-5xl md:text-6xl font-black tracking-tight text-[var(--on-surface)] mb-6 leading-tight">
-            This <span className="italic font-normal">Week</span> in Swing Stockholm
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <h2 className="font-serif text-5xl md:text-6xl font-black tracking-tight text-[var(--on-surface)] leading-tight">
+            This <span className="italic font-normal">Week</span> in Swing Dance Stockholm
           </h2>
-          <p className="font-sans font-body-lg text-zinc-600 max-w-lg mx-auto">
-            Your single, optimized calendar for Lindy Hop, Balboa, Blues, and Shag dancing events in Stockholm. Evoking the warm, tactile energy of vintage jazz halls.
-          </p>
         </div>
 
         {/* Client-Side Interactive Filters and Event Listing */}
@@ -63,7 +60,7 @@ export default async function Page() {
       <footer className="w-full border-t border-[var(--surface-container-highest)] bg-[var(--surface-container-low)] py-10 text-zinc-500 font-sans text-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
-            <p className="font-bold text-[var(--on-surface-variant)] uppercase tracking-wider">© {new Date().getFullYear()} Swing Stockholm.</p>
+            <p className="font-bold text-[var(--on-surface-variant)] uppercase tracking-wider">© {new Date().getFullYear()} Stockholm Swing.</p>
             <p className="mt-1 text-zinc-500 max-w-sm leading-relaxed">
               Not affiliated with any specific studio. Built to support the local Stockholm swing dance community.
             </p>
