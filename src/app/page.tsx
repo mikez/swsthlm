@@ -19,16 +19,16 @@ export default async function Page() {
     <div className="min-h-screen flex flex-col relative bg-[var(--background)] text-[var(--on-surface)]">
       {/* Header - Rhythmic Heritage centered design */}
       <header className="w-full border-b border-[var(--surface-container-highest)] bg-[var(--surface)]/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded border border-[var(--on-surface)] bg-[var(--primary)] flex items-center justify-center shadow-[2px_2px_0px_0px_var(--on-surface)]">
-              <Sparkles className="w-5 h-5 text-white" />
+              <Music className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="font-serif text-xl font-bold tracking-tight text-[var(--on-surface)] flex items-center gap-1.5">
+              <div className="font-serif text-xl font-bold tracking-tight text-[var(--on-surface)] flex items-center gap-1.5">
                 Stockholm <span className="text-[var(--primary)]">Swing</span>
-              </h1>
-              <p className="font-sans text-[10px] text-[var(--outline)] uppercase tracking-widest font-extrabold">Dance Calendar</p>
+              </div>
+              <p className="font-sans text-[10px] text-[var(--outline)] uppercase tracking-widest font-extrabold mt-0.5">Dance Calendar</p>
             </div>
           </div>
 
@@ -51,9 +51,9 @@ export default async function Page() {
             <Sparkles className="w-3.5 h-3.5" />
             Stockholm&apos;s Swing Dance Aggregator
           </div>
-          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-[var(--on-surface)] leading-tight">
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-[var(--on-surface)] leading-tight">
             This <span className="italic font-normal">Week</span> in Swing Dance Stockholm
-          </h2>
+          </h1>
           <p className="mt-4 font-sans text-sm md:text-base text-[var(--on-surface-variant)] leading-relaxed max-w-md mx-auto">
             Your single, optimized guide to Lindy Hop, Balboa, Shag, and Blues social dancing and workshops in Stockholm.
           </p>

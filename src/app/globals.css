@@ -36,6 +36,8 @@
   --error: #ba1a1a;
   --on-error: #ffffff;
   --error-container: #ffdad6;
+  
+  --transition-physics: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
@@ -104,8 +106,8 @@ body {
 
 /* Tactile Graphic Elevation ("Sticker-Stacking") */
 .lift-card {
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
-  box-shadow: 2px 2px 0px 0px rgba(27, 28, 22, 0.08);
+  transition: var(--transition-physics);
+  box-shadow: 2px 2px 0px 0px var(--on-surface);
 }
 
 .lift-card:hover {
@@ -116,7 +118,7 @@ body {
 
 /* Tactile lift states for buttons */
 .lift-btn-primary {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: var(--transition-physics);
   box-shadow: 2px 2px 0px 0px var(--on-surface);
 }
 

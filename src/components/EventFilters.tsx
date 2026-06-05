@@ -122,15 +122,15 @@ export function EventFilters({ events, currentDate }: EventFiltersProps) {
       {/* Search and Filters panel */}
       <div className="border border-[var(--surface-container-highest)] bg-[var(--surface-container-low)] rounded-lg p-6 mb-10 shadow-sm">
         <div className="flex flex-col gap-6">
-          {/* Search Bar - Ledger Bottom Border Style */}
-          <div className="relative w-full">
-            <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+          {/* Search Bar - Premium Neobrutalist Block Container */}
+          <div className="relative w-full bg-[var(--surface-container-lowest)] border-2 border-[var(--on-surface)] rounded shadow-[2px_2px_0px_var(--on-surface)] transition-all focus-within:shadow-[4px_4px_0px_var(--primary)] focus-within:-translate-x-0.5 focus-within:-translate-y-0.5">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--outline)]" />
             <input
               type="text"
               placeholder="Search by band, DJ, venue, title..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-4 py-3 bg-transparent border-0 border-b-2 border-[var(--on-surface)] text-[var(--on-surface)] placeholder-zinc-500 focus:outline-none focus:ring-0 focus:border-[var(--primary)] font-sans font-body-md transition-all rounded-none"
+              className="w-full pl-11 pr-4 py-3.5 bg-transparent border-0 text-[var(--on-surface)] placeholder-[var(--outline)] focus:outline-none focus:ring-0 font-sans font-body-md"
             />
           </div>
 
@@ -139,15 +139,15 @@ export function EventFilters({ events, currentDate }: EventFiltersProps) {
             <span className="flex items-center gap-2 font-sans text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
               <Sparkles className="w-3.5 h-3.5 text-[var(--primary)]" /> Filter by Style
             </span>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex overflow-x-auto pb-2 -mb-2 gap-2.5 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {stylesList.map((style) => (
                 <button
                   key={style}
                   onClick={() => setSelectedStyle(style)}
-                  className={`px-4 py-1.5 rounded text-xs font-bold uppercase tracking-wider border transition-all ${
+                  className={`snap-start whitespace-nowrap px-4 py-2 rounded text-xs font-bold uppercase tracking-wider border-2 border-[var(--on-surface)] transition-all cursor-pointer ${
                     selectedStyle === style
-                      ? 'bg-[var(--primary)] text-white border-[var(--on-surface)] font-bold shadow-[2px_2px_0px_0px_var(--on-surface)] -translate-y-0.5 -translate-x-0.5'
-                      : 'bg-[var(--surface-container)] hover:bg-[var(--surface-container-high)] text-[var(--on-surface)] border-[var(--surface-container-highest)]'
+                      ? 'bg-[var(--primary)] text-white font-bold shadow-[2px_2px_0px_0px_var(--on-surface)] -translate-y-0.5 -translate-x-0.5'
+                      : 'bg-[var(--surface-container)] hover:bg-[var(--surface-container-high)] text-[var(--on-surface)] shadow-[0px_0px_0px_0px_var(--on-surface)]'
                   }`}
                 >
                   {normalizeStyleLabel(style)}
@@ -161,15 +161,15 @@ export function EventFilters({ events, currentDate }: EventFiltersProps) {
             <span className="flex items-center gap-2 font-sans text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
               <MapPin className="w-3.5 h-3.5 text-[var(--secondary)]" /> Filter by Venue
             </span>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex overflow-x-auto pb-2 -mb-2 gap-2.5 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {venuesList.map((venue) => (
                 <button
                   key={venue}
                   onClick={() => setSelectedVenue(venue)}
-                  className={`px-4 py-1.5 rounded text-xs font-bold uppercase tracking-wider border transition-all ${
+                  className={`snap-start whitespace-nowrap px-4 py-2 rounded text-xs font-bold uppercase tracking-wider border-2 border-[var(--on-surface)] transition-all cursor-pointer ${
                     selectedVenue === venue
-                      ? 'bg-[var(--secondary)] text-white border-[var(--on-surface)] font-bold shadow-[2px_2px_0px_0px_var(--on-surface)] -translate-y-0.5 -translate-x-0.5'
-                      : 'bg-[var(--surface-container)] hover:bg-[var(--surface-container-high)] text-[var(--on-surface)] border-[var(--surface-container-highest)]'
+                      ? 'bg-[var(--secondary)] text-white font-bold shadow-[2px_2px_0px_0px_var(--on-surface)] -translate-y-0.5 -translate-x-0.5'
+                      : 'bg-[var(--surface-container)] hover:bg-[var(--surface-container-high)] text-[var(--on-surface)] shadow-[0px_0px_0px_0px_var(--on-surface)]'
                   }`}
                 >
                   {venue === 'all' ? 'All Venues' : venue}

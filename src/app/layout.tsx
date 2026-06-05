@@ -6,6 +6,7 @@ import './globals.css';
 const playfair = Playfair_Display({
   variable: '--font-playfair',
   subsets: ['latin'],
+  style: ['normal', 'italic'],
 });
 
 const jakarta = Plus_Jakarta_Sans({

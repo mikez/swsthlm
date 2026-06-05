@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Calendar, Clock, MapPin, Music, Disc, Ticket, User } from 'lucide-react';
 import { SwingEvent } from '@/types/event';
 import { formatEventDate } from '@/lib/events';
@@ -9,6 +9,7 @@ interface EventCardProps {
 }
 
 export function EventCard({ event, isThisWeek }: EventCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
   // Normalize style display name
   const getStyleLabel = (style: string) => {
     switch (style.toLowerCase()) {
@@ -28,20 +29,20 @@ export function EventCard({ event, isThisWeek }: EventCardProps) {
   const getStyleColor = (style: string) => {
     switch (style.toLowerCase()) {
       case 'lindy':
-        return 'bg-[#ffdf99]/30 text-[#725813] border-[#725813]/25'; // Warm Gold/Amber
+        return 'bg-[var(--tertiary)]/10 text-[var(--tertiary)] border-[var(--tertiary)]/20'; // Warm Gold/Amber
       case 'balboa':
-        return 'bg-[#cadaff] text-[#4f5e7e] border-[#4f5e7e]/25'; // Soft Navy/Blue
+        return 'bg-[var(--secondary)]/10 text-[var(--secondary)] border-[var(--secondary)]/20'; // Soft Navy/Blue
       case 'blues':
-        return 'bg-zinc-200 text-zinc-800 border-zinc-300';
+        return 'bg-[var(--surface-container-high)] text-[var(--on-surface-variant)] border-[var(--outline-variant)]';
       default:
-        return 'bg-zinc-150 text-zinc-700 border-zinc-250';
+        return 'bg-[var(--surface-container)] text-[var(--on-surface-variant)] border-[var(--surface-container-highest)]';
     }
   };
 
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${event.venue} ${event.address}`)}`;
 
   return (
-    <div className="relative lift-card rounded-lg border border-[var(--surface-container-highest)] bg-[var(--surface-container-low)] p-6 overflow-hidden flex flex-col justify-between min-h-[340px] text-[var(--on-surface)]">
+    <div className="relative lift-card rounded border-2 border-[var(--on-surface)] bg-[var(--surface-container-low)] p-6 overflow-hidden flex flex-col justify-between min-h-[340px] text-[var(--on-surface)]">
       {/* Highlighting border/accent for events happening "This Week" */}
       {isThisWeek && (
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-[var(--primary)]" />
@@ -96,7 +97,7 @@ export function EventCard({ event, isThisWeek }: EventCardProps) {
                 {event.venue}
               </a>
               {event.address && (
-                <span className="block text-xs text-zinc-500 mt-0.5">{event.address}</span>
+                <span className="block text-xs text-[var(--outline)] mt-0.5">{event.address}</span>
               )}
             </div>
           </div>
@@ -126,16 +127,26 @@ export function EventCard({ event, isThisWeek }: EventCardProps) {
 
         {/* Organizer */}
         {event.organizer && (
-          <div className="flex items-center gap-1.5 font-sans text-xs text-zinc-500 mb-4 font-medium uppercase tracking-wider">
+          <div className="flex items-center gap-1.5 font-sans text-xs text-[var(--outline)] mb-4 font-medium uppercase tracking-wider">
             <User className="w-3 h-3 text-[var(--outline)]" />
             <span>By {event.organizer}</span>
           </div>
         )}
 
-        {/* Description body */}
-        <p className="font-sans font-body-md text-zinc-700 leading-relaxed mb-6 whitespace-pre-line line-clamp-3">
-          {event.body}
-        </p>
+        {/* Description body with On-Site Expansion */}
+        <div className="mb-6 font-sans font-body-md">
+          <p className={`text-[var(--on-surface-variant)] leading-relaxed whitespace-pre-line ${isExpanded ? '' : 'line-clamp-3'}`}>
+            {event.body}
+          </p>
+          {(event.body.split('\n').length > 3 || event.body.length > 150) && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="mt-2 text-xs font-bold text-[var(--primary)] hover:underline uppercase tracking-wider cursor-pointer"
+            >
+              {isExpanded ? 'Show Less' : 'Show More'}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Action Footer */}
