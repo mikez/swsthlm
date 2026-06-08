@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stockholm Swing 🎺
 
-## Getting Started
+> Your single, lightweight, optimized guide to Lindy Hop, Balboa, Shag, and Blues social dancing and workshops in Stockholm.
 
-First, run the development server:
+Stockholm Swing is a Next.js-powered web application that aggregates swing dance events across Stockholm. It provides real-time updates and an edge-cached schedule, pulling data from structured CSVs to keep the local community informed about upcoming social dances, live bands, and workshops.
+
+## 🚀 Features
+
+- **Comprehensive Calendar**: Track events for Lindy Hop, Balboa, Shag, and Blues.
+- **Client-Side Filtering**: Easily filter events by style, date, and venue.
+- **Chrome Extension Scraper**: Includes a custom Chrome extension (`/scrapers/chromeext`) that automates scraping event data directly from local studio websites (e.g., Chicago75) into the required CSV format.
+- **Modern Stack**: Built with Next.js 15 App Router, React 19, and Tailwind CSS 4.
+
+## 🛠 Tech Stack
+
+- **Framework**: [Next.js 15](https://nextjs.org/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Data Parsing**: [PapaParse](https://www.papaparse.com/)
+- **Deployment & Analytics**: [Vercel](https://vercel.com)
+
+## 🏃 Getting Started
+
+First, install dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🕸 Web Scraper
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The `/scrapers/chromeext` directory contains a one-click Chrome Extension used by admins to extract event data from dance studio websites into a ready-to-paste CSV format. 
+1. Load unpacked extension in `chrome://extensions/`
+2. Navigate to an event page
+3. Click the extension icon to instantly copy the parsed CSV row to your clipboard.
 
-## Learn More
+## 🤝 Community
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is built to support the local Stockholm swing dance community and is not affiliated with any specific studio. Contributions, bug reports, and feature requests are welcome!
