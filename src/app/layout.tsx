@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Playfair_Display, Plus_Jakarta_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import './globals.css';
 
 const playfair = Playfair_Display({
@@ -30,7 +32,13 @@ export default function RootLayout({
       className={`${playfair.variable} ${jakarta.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
+        <div className="min-h-screen flex flex-col relative bg-[var(--background)] text-[var(--on-surface)]">
+          <Header />
+          <main className="flex-grow">
+            {children}
+          </main>
+          <Footer />
+        </div>
         <Analytics />
       </body>
     </html>

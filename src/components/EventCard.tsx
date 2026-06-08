@@ -1,15 +1,64 @@
 import React, { useState } from 'react';
 import { Calendar, Clock, MapPin, Music, Disc, Ticket, User } from 'lucide-react';
 import { SwingEvent } from '@/types/event';
-import { formatEventDate } from '@/lib/events';
+import { formatEventDate, getTemporalBadge, TemporalBadge } from '@/lib/events';
 
 interface EventCardProps {
   event: SwingEvent;
   isThisWeek: boolean;
+  currentDate: string;
+  currentTime: string;
 }
 
-export function EventCard({ event, isThisWeek }: EventCardProps) {
+function TemporalBadgeDisplay({ badge }: { badge: TemporalBadge }) {
+  if (!badge) return null;
+
+  switch (badge) {
+    case 'happening-now':
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-red-600 text-white text-[11px] uppercase font-bold tracking-wider">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+          </span>
+          Happening Now
+        </span>
+      );
+    case 'tonight':
+      return (
+        <span className="px-2.5 py-0.5 rounded bg-[var(--primary)] text-white text-[11px] uppercase font-bold tracking-wider">
+          Tonight
+        </span>
+      );
+    case 'tomorrow':
+      return (
+        <span className="px-2.5 py-0.5 rounded bg-[var(--secondary)] text-white text-[11px] uppercase font-bold tracking-wider">
+          Tomorrow
+        </span>
+      );
+    case 'this-week':
+      return (
+        <span className="px-2.5 py-0.5 rounded bg-[var(--primary)]/15 text-[var(--primary)] text-[11px] uppercase font-bold tracking-wider border border-[var(--primary)]/20">
+          This Week
+        </span>
+      );
+    default:
+      return null;
+  }
+}
+
+export function EventCard({ event, isThisWeek, currentDate, currentTime }: EventCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const badge = getTemporalBadge(
+    event.date,
+    event.start,
+    event.end,
+    currentDate,
+    currentTime,
+    isThisWeek
+  );
+
   // Normalize style display name
   const getStyleLabel = (style: string) => {
     switch (style.toLowerCase()) {
@@ -39,13 +88,27 @@ export function EventCard({ event, isThisWeek }: EventCardProps) {
     }
   };
 
+  // Accent stripe color based on badge
+  const getStripeColor = () => {
+    switch (badge) {
+      case 'happening-now':
+        return 'bg-red-600';
+      case 'tonight':
+        return 'bg-[var(--primary)]';
+      case 'tomorrow':
+        return 'bg-[var(--secondary)]';
+      default:
+        return isThisWeek ? 'bg-[var(--primary)]' : '';
+    }
+  };
+
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${event.venue} ${event.address}`)}`;
 
   return (
-    <div className="relative lift-card rounded border-2 border-[var(--on-surface)] bg-[var(--surface-container-low)] p-6 overflow-hidden flex flex-col justify-between min-h-[340px] text-[var(--on-surface)]">
-      {/* Highlighting border/accent for events happening "This Week" */}
-      {isThisWeek && (
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-[var(--primary)]" />
+    <div className={`relative lift-card rounded border-2 border-[var(--on-surface)] bg-[var(--surface-container-low)] p-6 overflow-hidden flex flex-col justify-between min-h-[340px] text-[var(--on-surface)] ${badge === 'happening-now' ? 'ring-2 ring-red-500/30' : ''}`}>
+      {/* Highlighting border/accent stripe */}
+      {(isThisWeek || badge) && (
+        <div className={`absolute top-0 left-0 right-0 h-1.5 ${getStripeColor()}`} />
       )}
 
       <div>
@@ -60,16 +123,12 @@ export function EventCard({ event, isThisWeek }: EventCardProps) {
                 Draft Preview
               </span>
             )}
-            {isThisWeek && (
-              <span className="px-2.5 py-0.5 rounded bg-[var(--primary)] text-white text-[11px] uppercase font-bold tracking-wider">
-                This Week
-              </span>
-            )}
+            <TemporalBadgeDisplay badge={badge} />
           </div>
         </div>
 
-        {/* Title */}
-        <h3 className="font-serif text-2xl font-bold tracking-tight text-[var(--on-surface)] mb-4 hover:text-[var(--primary)] transition-colors">
+        {/* Title — no hover effect, not a link */}
+        <h3 className="font-serif text-2xl font-bold tracking-tight text-[var(--on-surface)] mb-4">
           {event.title}
         </h3>
 

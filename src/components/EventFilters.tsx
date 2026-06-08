@@ -9,9 +9,10 @@ import { isCurrentWeek, formatEventDate } from '@/lib/events';
 interface EventFiltersProps {
   events: SwingEvent[];
   currentDate: string;
+  currentTime: string;
 }
 
-export function EventFilters({ events, currentDate }: EventFiltersProps) {
+export function EventFilters({ events, currentDate, currentTime }: EventFiltersProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStyle, setSelectedStyle] = useState('all');
   const [selectedVenue, setSelectedVenue] = useState('all');
@@ -116,6 +117,31 @@ export function EventFilters({ events, currentDate }: EventFiltersProps) {
 
   // Total count for filters label
   const totalCount = filteredEvents.length;
+  const hasActiveFilters = selectedStyle !== 'all' || selectedVenue !== 'all' || !!searchQuery;
+
+  // Smart filter status message
+  const filterStatusMessage = useMemo(() => {
+    if (!hasActiveFilters) {
+      return <>Showing all <strong>{totalCount}</strong> event{totalCount !== 1 ? 's' : ''}</>;
+    }
+
+    const parts: string[] = [];
+    if (selectedStyle !== 'all') {
+      parts.push(normalizeStyleLabel(selectedStyle));
+    }
+
+    let message = `${totalCount} ${parts.length > 0 ? parts.join(' ') + ' ' : ''}event${totalCount !== 1 ? 's' : ''}`;
+
+    if (selectedVenue !== 'all') {
+      message += ` at ${selectedVenue}`;
+    }
+
+    if (searchQuery) {
+      message += ` matching "${searchQuery}"`;
+    }
+
+    return <>Showing <strong>{message}</strong></>;
+  }, [totalCount, selectedStyle, selectedVenue, searchQuery, hasActiveFilters]);
 
   return (
     <div className="w-full">
@@ -139,20 +165,22 @@ export function EventFilters({ events, currentDate }: EventFiltersProps) {
             <span className="flex items-center gap-2 font-sans text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
               <Sparkles className="w-3.5 h-3.5 text-[var(--primary)]" /> Filter by Style
             </span>
-            <div className="flex overflow-x-auto pb-2 -mb-2 gap-2.5 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-              {stylesList.map((style) => (
-                <button
-                  key={style}
-                  onClick={() => setSelectedStyle(style)}
-                  className={`snap-start whitespace-nowrap px-4 py-2 rounded text-xs font-bold uppercase tracking-wider border-2 border-[var(--on-surface)] transition-all cursor-pointer ${
-                    selectedStyle === style
-                      ? 'bg-[var(--primary)] text-white font-bold shadow-[2px_2px_0px_0px_var(--on-surface)] -translate-y-0.5 -translate-x-0.5'
-                      : 'bg-[var(--surface-container)] hover:bg-[var(--surface-container-high)] text-[var(--on-surface)] shadow-[0px_0px_0px_0px_var(--on-surface)]'
-                  }`}
-                >
-                  {normalizeStyleLabel(style)}
-                </button>
-              ))}
+            <div className="filter-scroll-container">
+              <div className="flex overflow-x-auto pb-2 -mb-2 gap-2.5 snap-x md:flex-wrap [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                {stylesList.map((style) => (
+                  <button
+                    key={style}
+                    onClick={() => setSelectedStyle(style)}
+                    className={`snap-start whitespace-nowrap px-4 py-2 rounded text-xs font-bold uppercase tracking-wider border-2 border-[var(--on-surface)] transition-all cursor-pointer ${
+                      selectedStyle === style
+                        ? 'bg-[var(--primary)] text-white font-bold shadow-[2px_2px_0px_0px_var(--on-surface)] -translate-y-0.5 -translate-x-0.5'
+                        : 'bg-[var(--surface-container)] hover:bg-[var(--surface-container-high)] text-[var(--on-surface)] shadow-[0px_0px_0px_0px_var(--on-surface)]'
+                    }`}
+                  >
+                    {normalizeStyleLabel(style)}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -161,28 +189,30 @@ export function EventFilters({ events, currentDate }: EventFiltersProps) {
             <span className="flex items-center gap-2 font-sans text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
               <MapPin className="w-3.5 h-3.5 text-[var(--secondary)]" /> Filter by Venue
             </span>
-            <div className="flex overflow-x-auto pb-2 -mb-2 gap-2.5 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-              {venuesList.map((venue) => (
-                <button
-                  key={venue}
-                  onClick={() => setSelectedVenue(venue)}
-                  className={`snap-start whitespace-nowrap px-4 py-2 rounded text-xs font-bold uppercase tracking-wider border-2 border-[var(--on-surface)] transition-all cursor-pointer ${
-                    selectedVenue === venue
-                      ? 'bg-[var(--secondary)] text-white font-bold shadow-[2px_2px_0px_0px_var(--on-surface)] -translate-y-0.5 -translate-x-0.5'
-                      : 'bg-[var(--surface-container)] hover:bg-[var(--surface-container-high)] text-[var(--on-surface)] shadow-[0px_0px_0px_0px_var(--on-surface)]'
-                  }`}
-                >
-                  {venue === 'all' ? 'All Venues' : venue}
-                </button>
-              ))}
+            <div className="filter-scroll-container">
+              <div className="flex overflow-x-auto pb-2 -mb-2 gap-2.5 snap-x md:flex-wrap [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                {venuesList.map((venue) => (
+                  <button
+                    key={venue}
+                    onClick={() => setSelectedVenue(venue)}
+                    className={`snap-start whitespace-nowrap px-4 py-2 rounded text-xs font-bold uppercase tracking-wider border-2 border-[var(--on-surface)] transition-all cursor-pointer ${
+                      selectedVenue === venue
+                        ? 'bg-[var(--secondary)] text-white font-bold shadow-[2px_2px_0px_0px_var(--on-surface)] -translate-y-0.5 -translate-x-0.5'
+                        : 'bg-[var(--surface-container)] hover:bg-[var(--surface-container-high)] text-[var(--on-surface)] shadow-[0px_0px_0px_0px_var(--on-surface)]'
+                    }`}
+                  >
+                    {venue === 'all' ? 'All Venues' : venue}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Info count */}
+        {/* Smart filter status bar */}
         <div className="flex items-center justify-between mt-6 pt-4 border-t border-[var(--surface-container-highest)] font-sans text-xs text-zinc-500 uppercase tracking-wider font-semibold">
-          <span>Found {totalCount} event{totalCount !== 1 ? 's' : ''}</span>
-          {(selectedStyle !== 'all' || selectedVenue !== 'all' || searchQuery) && (
+          <span>{filterStatusMessage}</span>
+          {hasActiveFilters && (
             <button
               onClick={() => {
                 setSearchQuery('');
@@ -217,9 +247,6 @@ export function EventFilters({ events, currentDate }: EventFiltersProps) {
                   <h2 className="font-serif text-3xl font-bold tracking-tight text-[var(--on-surface)]">
                     Happening <span className="italic">This Week</span>
                   </h2>
-                  <span className="ml-2 px-2.5 py-0.5 rounded bg-[var(--primary)]/10 text-[var(--primary)] text-xs font-bold uppercase tracking-wider border border-[var(--primary)]/20">
-                    Highlight
-                  </span>
                 </div>
 
                 <div className="space-y-8">
@@ -230,7 +257,7 @@ export function EventFilters({ events, currentDate }: EventFiltersProps) {
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {dateEvents.map((event) => (
-                          <EventCard key={event.id} event={event} isThisWeek={true} />
+                          <EventCard key={event.id} event={event} isThisWeek={true} currentDate={currentDate} currentTime={currentTime} />
                         ))}
                       </div>
                     </div>
@@ -257,7 +284,7 @@ export function EventFilters({ events, currentDate }: EventFiltersProps) {
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {dateEvents.map((event) => (
-                          <EventCard key={event.id} event={event} isThisWeek={false} />
+                          <EventCard key={event.id} event={event} isThisWeek={false} currentDate={currentDate} currentTime={currentTime} />
                         ))}
                       </div>
                     </div>

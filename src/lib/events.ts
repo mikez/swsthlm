@@ -158,3 +158,90 @@ export function formatEventDate(dateStr: string): string {
     return dateStr;
   }
 }
+
+/**
+ * Helper to get the current time in Europe/Stockholm timezone as "HH:MM".
+ */
+export function getStockholmCurrentTime(): string {
+  const options = { timeZone: 'Europe/Stockholm', hour: '2-digit', minute: '2-digit', hour12: false } as const;
+  const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(new Date());
+  const hour = parts.find(p => p.type === 'hour')?.value || '00';
+  const minute = parts.find(p => p.type === 'minute')?.value || '00';
+  return `${hour}:${minute}`;
+}
+
+/**
+ * Checks if a YYYY-MM-DD date string is today relative to the reference date.
+ */
+export function isToday(dateStr: string, referenceDateStr: string): boolean {
+  return dateStr === referenceDateStr;
+}
+
+/**
+ * Checks if a YYYY-MM-DD date string is tomorrow relative to the reference date.
+ */
+export function isTomorrow(dateStr: string, referenceDateStr: string): boolean {
+  try {
+    const refDate = new Date(referenceDateStr);
+    refDate.setDate(refDate.getDate() + 1);
+    const tomorrow = refDate.toISOString().slice(0, 10);
+    return dateStr === tomorrow;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Checks if the current Stockholm time falls within an event's start–end window on a given date.
+ * Handles overnight events (end < start, e.g. 20:00–00:30).
+ */
+export function isHappeningNow(
+  dateStr: string,
+  startTime: string,
+  endTime: string,
+  referenceDateStr: string,
+  referenceTime: string
+): boolean {
+  if (dateStr !== referenceDateStr) return false;
+  if (!startTime || !endTime || !referenceTime) return false;
+
+  const current = referenceTime;
+  // Normal case: start < end (e.g. 19:00–23:00)
+  if (startTime <= endTime) {
+    return current >= startTime && current <= endTime;
+  }
+  // Overnight case: start > end (e.g. 20:00–00:30)
+  return current >= startTime || current <= endTime;
+}
+
+/**
+ * Temporal badge types in priority order.
+ */
+export type TemporalBadge = 'happening-now' | 'tonight' | 'tomorrow' | 'this-week' | null;
+
+/**
+ * Returns the appropriate temporal badge for an event.
+ * Priority: HAPPENING NOW > TONIGHT > TOMORROW > THIS WEEK > null
+ */
+export function getTemporalBadge(
+  dateStr: string,
+  startTime: string,
+  endTime: string,
+  referenceDateStr: string,
+  referenceTime: string,
+  isThisWeek: boolean
+): TemporalBadge {
+  if (isToday(dateStr, referenceDateStr)) {
+    if (isHappeningNow(dateStr, startTime, endTime, referenceDateStr, referenceTime)) {
+      return 'happening-now';
+    }
+    return 'tonight';
+  }
+  if (isTomorrow(dateStr, referenceDateStr)) {
+    return 'tomorrow';
+  }
+  if (isThisWeek) {
+    return 'this-week';
+  }
+  return null;
+}
