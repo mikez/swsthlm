@@ -1,0 +1,61 @@
+name: Event correction
+description: Something on the site is wrong — bad time, wrong DJ, price changed, event was cancelled.
+title: "[Correction] "
+labels: ["area:data"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for flagging this. Corrections are the single most useful contribution to the project — scrapers can't catch what only a person at the venue notices.
+
+        If you tapped "Wrong info?" on an event card, the next two fields are already filled in. If not, copy them from the site.
+
+  - type: input
+    id: event_name
+    attributes:
+      label: Event name
+      placeholder: e.g. P-Tzz-Dah, Chicago Live Wednesdays
+    validations:
+      required: true
+
+  - type: input
+    id: event_date
+    attributes:
+      label: Event date (YYYY-MM-DD)
+      placeholder: 2026-06-11
+    validations:
+      required: true
+
+  - type: dropdown
+    id: what_is_wrong
+    attributes:
+      label: What is wrong?
+      options:
+        - Time is wrong
+        - Venue or address is wrong
+        - Price is wrong
+        - DJ or band is wrong
+        - Event was cancelled
+        - Event doesn't exist / never happened
+        - Description is misleading or out of date
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: What should it say instead? The more specific the better.
+      placeholder: |
+        The DJ on Jun 11 was Emma Lundqvist, not TBA.
+        Source: I was there / organizer's Facebook post / studio website link.
+    validations:
+      required: true
+
+  - type: input
+    id: source
+    attributes:
+      label: How do you know? (optional)
+      description: A link to the organizer's post, the studio page, or just "I was there" — helps us trust the change without chasing it down.
+      placeholder: https://facebook.com/events/...

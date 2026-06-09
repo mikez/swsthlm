@@ -1,0 +1,47 @@
+name: Bug
+description: Something on the site is broken or behaves wrongly.
+title: "[Bug] "
+labels: ["area:ux"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For wrong event data (bad time, missing DJ, etc.), please use the **Event correction** template instead — this template is for website bugs.
+
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened?
+      placeholder: The filter for Balboa shows 0 events even though there's one on the homepage.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open stockholmswing.com
+        2. Select "Balboa" in the style filter
+        3. See zero events
+    validations:
+      required: false
+
+  - type: input
+    id: device
+    attributes:
+      label: Device and browser
+      placeholder: iPhone 15, Safari · or · Firefox 132 on Linux
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots (drag in)
+      description: Optional but very helpful.

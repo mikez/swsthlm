@@ -1,0 +1,39 @@
+name: Feature or improvement
+description: An idea to make the site better.
+title: "[Feature] "
+labels: ["area:ux"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing, a quick look at [docs/PROJECT.md](../blob/main/docs/PROJECT.md) will tell you the things we've deliberately chosen not to build (accounts, dashboards, server-side state, machine translation, a map view). Saves everyone time if your idea isn't on that list.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Start with the user's frustration, not the solution. Who is stuck, when, and why?
+      placeholder: When I'm in a group chat planning the weekend, I want to share "just the Balboa events" but I can only link the homepage.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you do about it?
+      description: Rough sketch is fine. We figure out details together.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered (optional)
+
+  - type: checkboxes
+    id: scope_check
+    attributes:
+      label: Scope check
+      options:
+        - label: This doesn't require accounts, a database, a CMS, or server-side state beyond the existing build pipeline.
+        - label: I've skimmed open issues to see if this already exists.

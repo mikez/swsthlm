@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: I organize an event and want it listed
+    url: https://forms.example/TODO
+    about: Use the organizer form. Your submission becomes a pull request that a maintainer reviews — no GitHub account needed.
+  - name: Ask a question or start a discussion
+    url: https://github.com/ranveeraggarwal/swsthlm/discussions
+    about: For anything that isn't a concrete bug, feature request, or data correction.
+  - name: Something private (email)
+    url: mailto:swing@walagran.com
+    about: For anything you'd rather not put in public.
