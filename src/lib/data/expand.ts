@@ -129,6 +129,8 @@ export function expandOneoff(
   opts: ExpandOptions
 ): Occurrence[] {
   const includeDrafts = opts.includeDrafts ?? false;
+  // `ended` is terminal — kept for the archive, never on the live calendar.
+  if (oneoff.status === 'ended') return [];
   if (oneoff.status === 'draft' && !includeDrafts) return [];
 
   const cancelled = oneoff.status === 'cancelled';

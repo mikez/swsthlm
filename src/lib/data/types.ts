@@ -14,7 +14,9 @@ export type Weekday =
   | 'sunday';
 
 export type SeriesStatus = 'draft' | 'live' | 'ended';
-export type OneoffStatus = 'draft' | 'live' | 'cancelled';
+// `ended` is terminal: the event happened and is retained for the archive,
+// but never renders on the live calendar.
+export type OneoffStatus = 'draft' | 'live' | 'ended' | 'cancelled';
 
 export interface Venue {
   id: string;

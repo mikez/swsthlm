@@ -1,0 +1,46 @@
+name: Validate data
+
+# Schema + integrity gate for /data (issue #3). Runs on any PR that touches
+# the data or the validator itself, and on pushes to main. Make this check
+# required in branch protection so no malformed row can merge.
+on:
+  pull_request:
+    paths:
+      - 'data/**'
+      - 'scripts/validate-data.mjs'
+      - '.github/workflows/validate-data.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/**'
+
+jobs:
+  validate:
+    name: Schema + integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # The gate. Fails the PR with a readable message on any schema error.
+      - run: npm run validate:data
+      # Validator unit tests (kept honest alongside the data).
+      - run: npm test
+
+  urls:
+    # URL reachability is advisory only (Facebook/Instagram block HEAD
+    # constantly), so it runs separately and never blocks a merge.
+    name: URL check (advisory)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: node scripts/validate-data.mjs --check-urls

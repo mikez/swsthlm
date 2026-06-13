@@ -59,6 +59,7 @@ Most contributions touch `/data/`, not `/src/`. A few rules:
 - **Don't paste dates into descriptions.** The structured date is the date. If a description contains "Lördag 14/3", strip it; the renderer will format the date itself.
 - **Cancellations are exceptions, not deletions.** Add a row to `exceptions.csv` with the cancelled flag — the site shows the cancellation, the calendar feed emits `STATUS:CANCELLED`, subscribers find out. Deleting the row hides the cancellation from everyone who needed to see it.
 - **Drafts are fine.** Set `status=draft` to commit data you're not ready to publish; it won't render on the site or in feeds.
+- **Past events are kept, not deleted.** When a one-off is over, set `status=ended` instead of removing the row — we retain it for a possible future archive. The build renders only `live`, so it drops off the calendar while the history survives. (Leaving a past event as `live` fails CI.)
 - **TBA is fine, but only when it's really TBA.** The renderer hides TBA dj/band fields. Don't put "TBA" in price, time, or venue.
 
 The full column-by-column contract lives in [`docs/DATA.md`](docs/DATA.md). CI validates every PR against that schema and will leave a comment if something doesn't fit.
@@ -74,7 +75,7 @@ Small PRs over large ones. A PR should answer one of: "fix this data error," "ad
 - For code PRs, include before/after screenshots when anything visible changes.
 - Stockholm time (Europe/Stockholm) in all event times. The build handles DST; you don't.
 
-A bot will run schema validation, type-check the Next.js build, and post any warnings. Green checks aren't required for merge — sometimes a URL check fails because Facebook is being Facebook — but a maintainer will read what's red and decide.
+A GitHub Action runs on every PR that touches `/data`: a **required** schema + integrity check (a malformed row blocks merge, with a readable message saying which row and why) plus the validator's unit tests. A separate **advisory** URL-reachability check won't block — sometimes a HEAD request fails because Facebook is being Facebook. For code changes, run `npm run lint`, `npx tsc --noEmit`, and `npm test` before opening the PR.
 
 ## Issues and labels
 

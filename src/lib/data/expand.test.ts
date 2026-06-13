@@ -273,6 +273,13 @@ describe('expandOneoff', () => {
       expandOneoff({ ...danshuset, status: 'draft' }, { today: '2026-06-01', includeDrafts: true })
     ).toHaveLength(2);
   });
+
+  it('never renders an ended one-off, even with includeDrafts (archived)', () => {
+    expect(expandOneoff({ ...danshuset, status: 'ended' }, { today: '2026-06-01' })).toEqual([]);
+    expect(
+      expandOneoff({ ...danshuset, status: 'ended' }, { today: '2026-06-01', includeDrafts: true })
+    ).toEqual([]);
+  });
 });
 
 // --- Full pipeline ---

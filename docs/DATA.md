@@ -97,9 +97,11 @@ Same shape as `series.csv` minus the recurrence columns, plus explicit dates.
 | `end_date` | no | `YYYY-MM-DD` | Set for multi-day continuous events (e.g. Danshuset Fri+Sat). Inclusive. Build expands to one occurrence per day, sharing one card. |
 | `start`, `end` | yes | `HH:MM` | |
 | `price`, `payment`, `beginner_class`, `music`, `dj`, `band`, `organizer`, `url`, `description` | as for series | | |
-| `status` | yes | `draft` \| `live` \| `cancelled` | Note: `cancelled` is a row-level status for one-offs, since there's no exception to attach. |
+| `status` | yes | `draft` \| `live` \| `ended` \| `cancelled` | `cancelled` is a row-level status for one-offs (no exception to attach). `ended` is terminal: the event happened and the row is **kept for the archive**, but it never renders on the live calendar. |
 
 For multi-day events with different content per day (e.g. a festival with separate band lineups), use one row per day with distinct IDs. The dedupe-collapse logic on the renderer only merges rows that share an ID.
+
+**Past one-offs are retained, not deleted.** Once an event is over, set its `status` to `ended` rather than removing the row — we keep the history for a future archive view. The build excludes anything that isn't `live` from the calendar, so an `ended` row is invisible today but available later. (Leaving a past event as `live` fails CI — see the validation rules.)
 
 ## Description hygiene
 
@@ -121,7 +123,7 @@ The schema check runs on every PR touching `/data/`. It fails the PR on:
 - Dates that don't parse, or times that don't match `HH:MM`
 - A series weekday that doesn't match an exception's date
 - An exception or oneoff referencing a `venue_id` or `series_id` that doesn't exist
-- A `live` oneoff entirely in the past
+- A `live` oneoff entirely in the past (mark it `ended` to keep it for the archive)
 - A duplicate `id` within a file
 - A date-like string inside a description (warning, not fail)
 - A URL that doesn't respond 200 (warning, not fail — Facebook events fail constantly)

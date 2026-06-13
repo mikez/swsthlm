@@ -2,7 +2,7 @@
 
 > Your single, lightweight, optimized guide to Lindy Hop, Balboa, Shag, and Blues social dancing and workshops in Stockholm.
 
-Stockholm Swing is a Next.js-powered web application that aggregates swing dance events across Stockholm. It provides real-time updates and an edge-cached schedule, pulling data from structured CSVs to keep the local community informed about upcoming social dances, live bands, and workshops.
+Stockholm Swing is a Next.js-powered web application that aggregates swing dance events across Stockholm. It is a fully static site, built at deploy time from structured CSV files in `/data` and rebuilt on every push to `main`, keeping the local community informed about upcoming social dances, live bands, and workshops.
 
 ## 🚀 Features
 
@@ -34,6 +34,15 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
+
+## 🧪 Tests & data validation
+
+```bash
+npm test               # unit tests: series expansion + the data validator
+npm run validate:data  # schema + integrity check over /data
+```
+
+The same schema check runs in CI on every PR that touches `/data` (see `.github/workflows/validate-data.yml`).
 
 ## 🕸 Web Scraper
 
