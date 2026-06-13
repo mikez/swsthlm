@@ -28,10 +28,10 @@ Three CSVs, mirroring the existing series/exceptions/oneoffs design:
 |---|---|---|
 | `data/series.csv` | Weekly/recurring events | `id, name, style, venue_id, weekday, start, end, price, beginner_class, music (live/dj), organizer, url, description, status (draft/live/ended), valid_from, valid_to` |
 | `data/exceptions.csv` | Per-date overrides for a series | `series_id, date, field, value` (e.g. `dj`, `band`, `cancelled`, `start`) |
-| `data/oneoffs.csv` | Single or multi-day events | same shape as series plus explicit `date`/`end_date` |
+| `data/oneoffs.csv` | Single or multi-day events | same shape as series plus explicit `date`/`end_date`; `status` is `draft/live/ended/cancelled` |
 | `data/venues.csv` | Venue registry | `id, name, address, neighborhood, lat, lng, maps_url` |
 
-A build-time expansion step turns series + exceptions into concrete occurrences for the next N weeks. `status` provides the draft/live gate; `cancelled` is a per-date exception, never a deletion, so the site can *show* the cancellation.
+A build-time expansion step turns series + exceptions into concrete occurrences for the next N weeks. `status` provides the draft/live gate; `cancelled` is a per-date exception, never a deletion, so the site can *show* the cancellation. Past one-offs are retained as `status=ended` (kept for a possible future archive), never deleted — the build renders only `live`.
 
 ## 3. Workstreams
 
