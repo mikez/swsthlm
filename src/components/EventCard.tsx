@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar, Clock, MapPin, Music, Disc, Ticket, User } from 'lucide-react';
 import { SwingEvent } from '@/types/event';
-import { formatEventDate, getTemporalBadge, TemporalBadge } from '@/lib/events';
+import { formatEventDate, getTemporalBadge, TemporalBadge } from '@/lib/datetime';
 
 interface EventCardProps {
   event: SwingEvent;

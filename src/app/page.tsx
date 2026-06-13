@@ -1,7 +1,13 @@
 import React from 'react';
-import { getEvents, getStockholmCurrentDate, getStockholmCurrentTime } from '@/lib/events';
+import { getEvents } from '@/lib/events';
+import { getStockholmCurrentDate, getStockholmCurrentTime } from '@/lib/datetime';
 import { EventFilters } from '@/components/EventFilters';
 import type { Metadata } from 'next';
+
+// Built statically from /data; rebuilt on push to main via the Vercel deploy
+// hook. The event list is fixed at build; only the temporal badges are live
+// (computed client-side after hydration).
+export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   title: 'This Week in Swing Dance Stockholm | Stockholm Swing',

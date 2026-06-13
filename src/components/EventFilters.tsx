@@ -1,21 +1,41 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, CalendarDays, SlidersHorizontal, MapPin, Sparkles } from 'lucide-react';
 import { SwingEvent } from '@/types/event';
 import { EventCard } from './EventCard';
-import { isCurrentWeek, formatEventDate } from '@/lib/events';
+import {
+  isCurrentWeek,
+  formatEventDate,
+  getStockholmCurrentDate,
+  getStockholmCurrentTime,
+} from '@/lib/datetime';
 
 interface EventFiltersProps {
   events: SwingEvent[];
+  // Build-time Stockholm date/time used to seed the first render so SSR and
+  // hydration agree; the real client clock takes over in the effect below.
   currentDate: string;
   currentTime: string;
 }
 
-export function EventFilters({ events, currentDate, currentTime }: EventFiltersProps) {
+export function EventFilters({ events, currentDate: initialDate, currentTime: initialTime }: EventFiltersProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStyle, setSelectedStyle] = useState('all');
   const [selectedVenue, setSelectedVenue] = useState('all');
+
+  // "Now" can't be known by static HTML, so the temporal badges and the
+  // This Week / Upcoming split are computed client-side after hydration.
+  // Seeded with the build-time values to keep the first paint mismatch-free.
+  const [now, setNow] = useState({ date: initialDate, time: initialTime });
+  useEffect(() => {
+    const tick = () => setNow({ date: getStockholmCurrentDate(), time: getStockholmCurrentTime() });
+    tick();
+    const id = setInterval(tick, 60_000);
+    return () => clearInterval(id);
+  }, []);
+  const currentDate = now.date;
+  const currentTime = now.time;
 
   // Dynamically extract unique venues from the events list
   const venuesList = useMemo(() => {

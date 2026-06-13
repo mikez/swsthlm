@@ -1,247 +1,167 @@
+// Server-only data loading. Reads the four CSVs under /data at build time,
+// coerces them to typed rows, expands series + exceptions into occurrences
+// (merged with one-offs), joins venue details, and adapts to the SwingEvent
+// shape the UI renders. PapaParse + fs are used here only — never shipped to
+// the client (the `node:fs` import below makes any client import fail loudly).
+
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import Papa from 'papaparse';
 import { SwingEvent } from '@/types/event';
+import { getStockholmCurrentDate } from '@/lib/datetime';
+import { expandAll } from '@/lib/data/expand';
+import type {
+  Exception,
+  Music,
+  Oneoff,
+  OneoffStatus,
+  Series,
+  SeriesStatus,
+  Style,
+  Venue,
+  Weekday,
+} from '@/lib/data/types';
 
-const MOCK_CSV = `id,title,status,date,start,end,venue,address,style,organizer,band,dj,ticket,body
-1,Lindy Hop Social at Chicago,published,2026-06-03,19:00,23:00,Chicago Swing Dance Studio,Hornsgatan 75,lindy,Chicago Swing Dance Studio,The Hornsgatan Ramblers,DJ Swing Cat,https://www.chicago.se,Join us for a fantastic night of Lindy Hop at Stockholm's premier swing dance venue! A beginner friendly intro class starts at 19:00.
-2,Balboa & Shag Night at Alvik,published,2026-06-04,18:30,22:00,Alvik Medborgarhus,Gustavslundsvägen 168,balboa,Stockholm Balboa Society,,DJ Slow Drag,,An evening dedicated to Balboa and Shag lovers. Beautiful parquet floor and great acoustics.
-3,Blues at Chicago - Late Night,published,2026-06-05,20:00,00:30,Chicago Swing Dance Studio,Hornsgatan 75,blues,Swedish Blues Association,The Midnight Blues Band,,https://www.chicago.se,Late night moody blues dancing in the cozy basement. Cozy vibes, great music, and friendly dancers.
-4,Saturday Lindy in the Park,published,2026-06-06,14:00,18:00,Haga Parken,Hagaparken,lindy,Swingin' Stockholm,,,https://example.com,Outdoor social dancing near the Copper Tents! Bring your own picnic and dancing shoes for the concrete/grass. Free admission!
-5,Balboa Workshop & Tea Dance,published,2026-06-07,13:00,17:00,Alvik Medborgarhus,Gustavslundsvägen 168,balboa,Stockholm Balboa Society,,,https://example.com,Sunday afternoon tea dance preceded by a 1-hour workshop on Balboa footwork. Tea and cakes included!
-6,Secret Draft Social,draft,2026-06-03,20:00,22:00,Chicago Swing Dance Studio,Hornsgatan 75,lindy,Private,,DJ Secret,,This is a draft event and should not be displayed in production.
-7,Next Week's Jump Session,published,2026-06-10,19:00,22:30,Chicago Swing Dance Studio,Hornsgatan 75,lindy,Chicago Swing Dance Studio,The Stockholm Swingers,,,A high energy mid-week lindy hop social dancing event.`;
+const DATA_DIR = path.join(process.cwd(), 'data');
+const EXPANSION_WEEKS = 10;
 
-/**
- * Normalizes keys to lowercase, trimming whitespace
- */
-function normalizeRow(row: Record<string, string>): Partial<SwingEvent> {
-  const cleanRow: Record<string, string> = {};
-  for (const [key, val] of Object.entries(row)) {
-    const cleanKey = key.trim().toLowerCase();
-    cleanRow[cleanKey] = typeof val === 'string' ? val.trim() : '';
+type Row = Record<string, string>;
+
+function readCsv(file: string): Row[] {
+  const csv = readFileSync(path.join(DATA_DIR, file), 'utf-8');
+  const parsed = Papa.parse<Row>(csv, { header: true, skipEmptyLines: true });
+  return parsed.data;
+}
+
+// Optional cell → trimmed value or undefined. Required cell → trimmed value.
+const opt = (v?: string) => {
+  const t = (v ?? '').trim();
+  return t === '' ? undefined : t;
+};
+const req = (v?: string) => (v ?? '').trim();
+const isYes = (v?: string) => (v ?? '').trim().toLowerCase() === 'yes';
+
+function loadVenues(): Map<string, Venue> {
+  const map = new Map<string, Venue>();
+  for (const r of readCsv('venues.csv')) {
+    if (!req(r.id)) continue;
+    map.set(req(r.id), {
+      id: req(r.id),
+      name: req(r.name),
+      address: req(r.address),
+      neighborhood: req(r.neighborhood),
+      lat: opt(r.lat),
+      lng: opt(r.lng),
+      mapsUrl: opt(r.maps_url),
+    });
   }
+  return map;
+}
 
-  // Parse and cast fields to match SwingEvent schema
-  return {
-    id: cleanRow.id || '',
-    title: cleanRow.title || 'Untitled Event',
-    status: (cleanRow.status === 'draft' ? 'draft' : 'published') as 'published' | 'draft',
-    date: cleanRow.date || '',
-    start: cleanRow.start || '',
-    end: cleanRow.end || '',
-    venue: cleanRow.venue || '',
-    address: cleanRow.address || '',
-    style: (cleanRow.style || 'all').toLowerCase(),
-    organizer: cleanRow.organizer || '',
-    band: cleanRow.band || undefined,
-    dj: cleanRow.dj || undefined,
-    ticket: cleanRow.ticket || undefined,
-    body: cleanRow.body || '',
-  };
+function loadSeries(): Series[] {
+  return readCsv('series.csv')
+    .filter((r) => req(r.id))
+    .map((r) => ({
+      id: req(r.id),
+      name: req(r.name),
+      style: req(r.style) as Style,
+      venueId: req(r.venue_id),
+      weekday: req(r.weekday) as Weekday,
+      start: req(r.start),
+      end: req(r.end),
+      price: req(r.price),
+      payment: opt(r.payment),
+      beginnerClass: opt(r.beginner_class),
+      music: req(r.music) as Music,
+      dj: opt(r.dj),
+      band: opt(r.band),
+      organizer: req(r.organizer),
+      url: req(r.url),
+      description: opt(r.description),
+      status: req(r.status) as SeriesStatus,
+      validFrom: req(r.valid_from),
+      validTo: opt(r.valid_to),
+    }));
+}
+
+function loadExceptions(): Exception[] {
+  return readCsv('exceptions.csv')
+    .filter((r) => req(r.series_id))
+    .map((r) => ({
+      seriesId: req(r.series_id),
+      date: req(r.date),
+      cancelled: isYes(r.cancelled),
+      start: opt(r.start),
+      end: opt(r.end),
+      dj: opt(r.dj),
+      band: opt(r.band),
+      music: opt(r.music) as Music | undefined,
+      price: opt(r.price),
+      note: opt(r.note),
+      description: opt(r.description),
+    }));
+}
+
+function loadOneoffs(): Oneoff[] {
+  return readCsv('oneoffs.csv')
+    .filter((r) => req(r.id))
+    .map((r) => ({
+      id: req(r.id),
+      name: req(r.name),
+      style: req(r.style) as Style,
+      venueId: req(r.venue_id),
+      date: req(r.date),
+      endDate: opt(r.end_date),
+      start: req(r.start),
+      end: req(r.end),
+      price: opt(r.price),
+      payment: opt(r.payment),
+      beginnerClass: opt(r.beginner_class),
+      music: req(r.music) as Music,
+      dj: opt(r.dj),
+      band: opt(r.band),
+      organizer: req(r.organizer),
+      url: req(r.url),
+      description: opt(r.description),
+      status: req(r.status) as OneoffStatus,
+    }));
+}
+
+// The UI's style label/colour logic keys off 'lindy' (legacy); keep that
+// mapping until the style-tag work (#20) reworks the labels.
+function styleForUi(style: Style): string {
+  return style === 'lindy-hop' ? 'lindy' : style;
 }
 
 /**
- * Fetches events from the event database feed (if configured) or falls back to local mock data.
- * Implementation of Incremental Static Regeneration edge caching (1 hour).
+ * Build-time event feed: expand /data into concrete occurrences and adapt them
+ * to SwingEvent for the renderer. Past occurrences are already dropped by the
+ * expansion (relative to the build date); the site rebuilds on push to main.
  */
 export async function getEvents(): Promise<SwingEvent[]> {
-  const spreadsheetId = process.env.NEXT_PUBLIC_SPREADSHEET_ID;
-  const gid = process.env.NEXT_PUBLIC_GID || '0';
-  let csvText = '';
-
-  if (spreadsheetId) {
-    const sheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${gid}`;
-    try {
-      const response = await fetch(sheetUrl, {
-        next: { revalidate: 3600 },
-      });
-      if (response.ok) {
-        csvText = await response.text();
-      } else {
-        console.warn(`Failed to fetch event database. Response code: ${response.status}. Using mock data instead.`);
-        csvText = MOCK_CSV;
-      }
-    } catch (e) {
-      console.error('Error fetching event database, falling back to mock data:', e);
-      csvText = MOCK_CSV;
-    }
-  } else {
-    csvText = MOCK_CSV;
-  }
-
-  const parseResult = Papa.parse<Record<string, string>>(csvText, {
-    header: true,
-    skipEmptyLines: true,
+  const venues = loadVenues();
+  const occurrences = expandAll(loadSeries(), loadExceptions(), loadOneoffs(), {
+    today: getStockholmCurrentDate(),
+    weeks: EXPANSION_WEEKS,
   });
 
-  const parsedEvents: SwingEvent[] = parseResult.data
-    .map((row) => normalizeRow(row) as SwingEvent)
-    .filter((event) => event.id && event.title && event.date);
-
-  // In production, automatically filter out events where status === 'draft'
-  const isProd = process.env.NODE_ENV === 'production';
-  let filteredEvents = isProd
-    ? parsedEvents.filter((event) => event.status === 'published')
-    : parsedEvents;
-
-  // Filter out past events (before current Stockholm date)
-  const currentDate = getStockholmCurrentDate();
-  filteredEvents = filteredEvents.filter((event) => event.date >= currentDate);
-
-  // Group and sort events chronologically by date and start time
-  return filteredEvents.sort((a, b) => {
-    if (a.date !== b.date) {
-      return a.date.localeCompare(b.date);
-    }
-    return a.start.localeCompare(b.start);
+  return occurrences.map((occ) => {
+    const venue = venues.get(occ.venueId);
+    return {
+      id: occ.occurrenceId,
+      title: occ.name,
+      status: 'published',
+      date: occ.date,
+      start: occ.start,
+      end: occ.end,
+      venue: venue?.name ?? occ.venueId,
+      address: venue?.address ?? '',
+      style: styleForUi(occ.style),
+      organizer: occ.organizer,
+      band: occ.band,
+      dj: occ.dj,
+      ticket: occ.url,
+      body: occ.description ?? '',
+    };
   });
-}
-
-/**
- * Helper to get the current date in the Europe/Stockholm timezone as a YYYY-MM-DD string.
- */
-export function getStockholmCurrentDate(): string {
-  const options = { timeZone: 'Europe/Stockholm', year: 'numeric', month: '2-digit', day: '2-digit' } as const;
-  const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(new Date());
-  const year = parts.find(p => p.type === 'year')?.value || '';
-  const month = parts.find(p => p.type === 'month')?.value || '';
-  const day = parts.find(p => p.type === 'day')?.value || '';
-  return `${year}-${month}-${day}`;
-}
-
-/**
- * Checks if a YYYY-MM-DD date falls within "This Week".
- * We define "This Week" relative to a reference date (defaults to current date, or a custom one for testing).
- * A week starts on Monday and ends on Sunday.
- */
-export function isCurrentWeek(dateStr: string, referenceDateStr?: string): boolean {
-  try {
-    const refDate = referenceDateStr ? new Date(referenceDateStr) : new Date();
-    // Normalize refDate to local midnight to avoid time zone shifts affecting calculations
-    refDate.setHours(0, 0, 0, 0);
-
-    const targetDate = new Date(dateStr);
-    targetDate.setHours(0, 0, 0, 0);
-
-    if (isNaN(targetDate.getTime())) return false;
-
-    // Get the start of the week (Monday)
-    const day = refDate.getDay();
-    const diffToMonday = day === 0 ? -6 : 1 - day; // Monday is 1, Sunday is 0
-    const startOfWeek = new Date(refDate);
-    startOfWeek.setDate(refDate.getDate() + diffToMonday);
-
-    // Get the end of the week (Sunday)
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
-    endOfWeek.setHours(23, 59, 59, 999);
-
-    return targetDate >= startOfWeek && targetDate <= endOfWeek;
-  } catch (error) {
-    console.error('Error calculating isCurrentWeek:', error);
-    return false;
-  }
-}
-
-/**
- * Formats a YYYY-MM-DD string into a readable Swedish/local date format, e.g., "Wednesday, Jun 3".
- */
-export function formatEventDate(dateStr: string): string {
-  try {
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return dateStr;
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'short',
-      day: 'numeric',
-    });
-  } catch {
-    return dateStr;
-  }
-}
-
-/**
- * Helper to get the current time in Europe/Stockholm timezone as "HH:MM".
- */
-export function getStockholmCurrentTime(): string {
-  const options = { timeZone: 'Europe/Stockholm', hour: '2-digit', minute: '2-digit', hour12: false } as const;
-  const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(new Date());
-  const hour = parts.find(p => p.type === 'hour')?.value || '00';
-  const minute = parts.find(p => p.type === 'minute')?.value || '00';
-  return `${hour}:${minute}`;
-}
-
-/**
- * Checks if a YYYY-MM-DD date string is today relative to the reference date.
- */
-export function isToday(dateStr: string, referenceDateStr: string): boolean {
-  return dateStr === referenceDateStr;
-}
-
-/**
- * Checks if a YYYY-MM-DD date string is tomorrow relative to the reference date.
- */
-export function isTomorrow(dateStr: string, referenceDateStr: string): boolean {
-  try {
-    const refDate = new Date(referenceDateStr);
-    refDate.setDate(refDate.getDate() + 1);
-    const tomorrow = refDate.toISOString().slice(0, 10);
-    return dateStr === tomorrow;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Checks if the current Stockholm time falls within an event's start–end window on a given date.
- * Handles overnight events (end < start, e.g. 20:00–00:30).
- */
-export function isHappeningNow(
-  dateStr: string,
-  startTime: string,
-  endTime: string,
-  referenceDateStr: string,
-  referenceTime: string
-): boolean {
-  if (dateStr !== referenceDateStr) return false;
-  if (!startTime || !endTime || !referenceTime) return false;
-
-  const current = referenceTime;
-  // Normal case: start < end (e.g. 19:00–23:00)
-  if (startTime <= endTime) {
-    return current >= startTime && current <= endTime;
-  }
-  // Overnight case: start > end (e.g. 20:00–00:30)
-  return current >= startTime || current <= endTime;
-}
-
-/**
- * Temporal badge types in priority order.
- */
-export type TemporalBadge = 'happening-now' | 'tonight' | 'tomorrow' | 'this-week' | null;
-
-/**
- * Returns the appropriate temporal badge for an event.
- * Priority: HAPPENING NOW > TONIGHT > TOMORROW > THIS WEEK > null
- */
-export function getTemporalBadge(
-  dateStr: string,
-  startTime: string,
-  endTime: string,
-  referenceDateStr: string,
-  referenceTime: string,
-  isThisWeek: boolean
-): TemporalBadge {
-  if (isToday(dateStr, referenceDateStr)) {
-    if (isHappeningNow(dateStr, startTime, endTime, referenceDateStr, referenceTime)) {
-      return 'happening-now';
-    }
-    return 'tonight';
-  }
-  if (isTomorrow(dateStr, referenceDateStr)) {
-    return 'tomorrow';
-  }
-  if (isThisWeek) {
-    return 'this-week';
-  }
-  return null;
 }
