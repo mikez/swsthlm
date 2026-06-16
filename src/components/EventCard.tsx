@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MapPin, Music, Disc, Ticket, Banknote, GraduationCap, ChevronDown, Moon } from 'lucide-react';
 import { SwingEvent } from '@/types/event';
 import { getTemporalBadge, formatEventDateRange, TemporalBadge } from '@/lib/datetime';
+import { ShareButton } from '@/components/ShareButton';
 
 interface EventCardProps {
   event: SwingEvent;
@@ -286,18 +287,21 @@ export function EventCard({ event, dates, nightCount, isThisWeek, currentDate, c
                 </p>
               )}
 
-              {/* Ticket CTA */}
-              {event.ticket && (
-                <a
-                  href={event.ticket}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded border border-[var(--on-surface)] bg-[var(--primary)] text-white hover:bg-[var(--primary-container)] font-bold uppercase tracking-wider text-xs lift-btn-primary"
-                >
-                  <Ticket className="w-4 h-4" />
-                  Get Tickets / Info
-                </a>
-              )}
+              {/* Ticket CTA + Share */}
+              <div className="flex items-center gap-2">
+                {event.ticket && (
+                  <a
+                    href={event.ticket}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded border border-[var(--on-surface)] bg-[var(--primary)] text-white hover:bg-[var(--primary-container)] font-bold uppercase tracking-wider text-xs lift-btn-primary"
+                  >
+                    <Ticket className="w-4 h-4" />
+                    Get Tickets / Info
+                  </a>
+                )}
+                <ShareButton eventId={event.id} eventDate={event.date} eventTitle={event.title} />
+              </div>
             </div>
           )}
         </>

@@ -7,6 +7,7 @@ function makeEvent(overrides: Partial<SwingEvent> & Pick<SwingEvent, 'id' | 'dat
   return {
     title: 'Test Event',
     status: 'published',
+    cancelled: false,
     start: '19:00',
     end: '23:00',
     venue: 'Test Venue',
