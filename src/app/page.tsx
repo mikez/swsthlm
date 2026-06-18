@@ -2,7 +2,6 @@ import React from 'react';
 import { getEvents } from '@/lib/events';
 import { getStockholmCurrentDate, getStockholmCurrentTime } from '@/lib/datetime';
 import { EventFilters } from '@/components/EventFilters';
-import { SubscribeButton } from '@/components/SubscribeButton';
 import type { Metadata } from 'next';
 
 // Built statically from /data; rebuilt on push to main via the Vercel deploy
@@ -36,9 +35,6 @@ export default async function Page() {
         <p className="mt-1 font-sans text-xs md:text-sm text-[var(--on-surface-variant)] leading-relaxed max-w-md mx-auto">
           Your guide to Lindy Hop, Balboa, Shag, and Blues social dancing in Stockholm.
         </p>
-        <div className="mt-4 flex justify-center">
-          <SubscribeButton />
-        </div>
       </div>
 
       {/* Client-Side Interactive Filters and Event Listing */}

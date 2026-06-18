@@ -101,9 +101,9 @@ export function SubscribeButton() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded border-2 border-[var(--on-surface)] bg-[var(--surface-container)] px-4 py-2 font-sans text-xs font-bold uppercase tracking-wider text-[var(--on-surface)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--on-surface)] cursor-pointer"
+        className="flex items-center gap-1.5 font-bold normal-case text-[var(--secondary)] hover:underline transition-colors cursor-pointer"
       >
-        <CalendarPlus className="h-4 w-4" />
+        <CalendarPlus className="w-3.5 h-3.5" />
         Subscribe
       </button>
 
@@ -117,7 +117,7 @@ export function SubscribeButton() {
             aria-modal="true"
             aria-labelledby="subscribe-title"
             onClick={(e) => e.stopPropagation()}
-            className="relative max-h-[90vh] w-full overflow-y-auto rounded-t-lg border-2 border-[var(--on-surface)] bg-[var(--surface-container-lowest)] p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] text-left animate-in slide-in-from-bottom-4 duration-200 sm:max-w-sm sm:rounded-lg sm:pb-6 sm:shadow-[4px_4px_0px_0px_var(--on-surface)] sm:zoom-in-95 sm:slide-in-from-bottom-1"
+            className="relative max-h-[90vh] w-full overflow-y-auto rounded-t-lg border-2 border-[var(--on-surface)] bg-[var(--surface-container-lowest)] p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] text-left normal-case tracking-normal animate-in slide-in-from-bottom-4 duration-200 sm:max-w-sm sm:rounded-lg sm:pb-6 sm:shadow-[4px_4px_0px_0px_var(--on-surface)] sm:zoom-in-95 sm:slide-in-from-bottom-1"
           >
             <button
               ref={closeRef}
